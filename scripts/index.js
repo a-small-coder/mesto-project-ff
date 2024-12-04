@@ -15,7 +15,7 @@ function createCard(data, removeCard) {
 
   // Настройка кнопки удаления
   const deleteButton = newCard.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", () => deleteCard(newCard));
+  deleteButton.addEventListener("click", () => removeCard(newCard));
 
   return newCard;
 }
