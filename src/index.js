@@ -1,50 +1,45 @@
 import "./styles/pages/index.css";
 
-require('./scripts/popups/popups.js')
-import { showImagePopup } from "./scripts/popups/image-popup";
+import { showImagePopup, openEditProfilePopup, openNewCardPopup} from "./components/modal";
+import { createCard } from "./components/card";
+import { initialCards } from "./data/cards";
+import { hundleFormSubmit as hundleProfileFormSubmit } from "./components/forms/profile-edit";
+import { handleCreateForm } from "./components/forms/create-card";
 
-import { initialCards } from "./scripts/cards";
-import { openNewCardPopup } from "./scripts/popups/create-card"
+// DOM узлы
+const placesList = document.querySelector(".places__list"); // Контейнер для карточек
+const editProfileButton = document.getElementById('editProfileButton'); // кнопка для редактирования профиля
+const newCardButton = document.getElementById('newCardButton'); // кнопка для создания карточки
+const newCardForm = document.getElementById('newCardForm'); // форма создания карточки
+const editProfileForm = document.getElementById('editProfileForm'); // форма редактирования профиля
 
-const newCardButton = document.getElementById('newCardButton');
-
-// @todo: Темплейт карточки
-const template = document.getElementById("card-template").content;
-
-// @todo: DOM узлы
-const placesList = document.querySelector(".places__list");
-
-// @todo: Функция создания карточки
-function createCard(data, removeCard) {
-  const newCard = template.querySelector(".card").cloneNode(true);
-  // Подстановка данных
-  const image = newCard.querySelector(".card__image");
-  image.src = data.link;
-  image.alt = data.name;
-  newCard.querySelector(".card__title").textContent = data.name;
-
-  // добавление логики попапа для просмотра изображения
-  image.addEventListener('click', () => {
-    showImagePopup(image.src, image.alt);
-})
-
-  // Настройка кнопки удаления
-  const deleteButton = newCard.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", () => removeCard(newCard));
-
-  return newCard;
-}
-
-// @todo: Функция удаления карточки
-function deleteCard(cardElement) {
-  cardElement.remove();
-}
-
-// @todo: Вывести карточки на страницу
+// Выводим карточки на страницу
 initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, deleteCard);
+  const cardElement = createCard(cardData, showImagePopup);
   placesList.append(cardElement);
 });
 
+
 // Открытие модального окна по клику на кнопку создания карточки
-newCardButton.addEventListener('click', () => openNewCardPopup(createCard, deleteCard, placesList));
+newCardButton.addEventListener('click', () => openNewCardPopup(
+  newCardForm
+  ));
+
+// Открытие модального окна по клику на кнопку редактирования профиля
+editProfileButton.addEventListener('click', () => openEditProfilePopup(editProfileForm));
+
+// Обработка отправки формы создания карточки
+newCardForm.addEventListener('submit', (event) => handleCreateForm(
+  event, newCardForm, createCard, placesList, showImagePopup
+));
+
+// Обработка отправки формы редактирования профиля
+editProfileForm.addEventListener('submit', (e) => {
+  hundleProfileFormSubmit(e, editProfileForm); 
+});
+
+// Добавляем анимацию на все модальные окна
+const popups = document.querySelectorAll('.popup');
+popups.forEach(popup => {
+  popup.classList.add('popup_is-animated')
+})
