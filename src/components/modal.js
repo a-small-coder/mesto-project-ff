@@ -40,10 +40,6 @@ function addPopupHandlers(popup) {
     popupCloseIcon.addEventListener('click', closeByIcon);
     popup.addEventListener('click', closeByOverlay);
     document.addEventListener('keydown', closeByESC);
-
-    // addCloseByClickIcon(popup)
-    // addCloseByClickOverlay(popup)
-    // addCloseByPressESC(popup)
 }
 
 // функция закрытия модалки
@@ -53,33 +49,6 @@ export function hidePopup(popup) {
     // Удаляем обработчик события
     removePopupHandlers(popup)
 }
-
-// функция закрытия по крестику
-// function addCloseByClickIcon (popup) {
-//     const popupCloseIcon = popup.querySelector(".popup__close");
-//     if (popupCloseIcon !== null) {
-//         popupCloseIcon.addEventListener('click', () => hidePopup(popup));
-//     }
-// }
-
-// // функция закрытия по оверлею
-// function addCloseByClickOverlay (popup) {
-//     popup.addEventListener('click', (event) => {
-//         if (event.target === popup) {
-//             hidePopup(popup);
-//         }
-//     });
-// }
-
-// // функция закрытие по Esc
-// function addCloseByPressESC (popup) {
-//     const handler = (event) => {
-//         if (event.key === 'Escape') {
-//             hidePopup(popup);
-//         }
-//     }
-//     document.addEventListener('keydown', handler);
-// }
 
 
 // Функция для открытия модального окна изображения

@@ -40,11 +40,4 @@ export function deleteCard(cardElement) {
 export function handleLikeButtonClick(likeButton) {
     // Меняем css класс для иконки
     likeButton.classList.toggle('card__like-button_is-active');
-
-    // на будущее
-    // if (likeButton.classList.contains('card__like-button_is-active')) {
-    //     console.log('Карточка добавлена в избранное');
-    // } else {
-    //     console.log('Карточка удалена из избранного');
-    // }
   }
