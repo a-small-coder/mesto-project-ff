@@ -1,17 +1,38 @@
 import "./styles/pages/index.css";
 
-import { showImagePopup, openEditProfilePopup, openNewCardPopup} from "./components/modal";
+import { openPopup, closePopup, addPopupCloseTarget} from "./components/modal";
 import { createCard } from "./components/card";
 import { initialCards } from "./data/cards";
-import { hundleFormSubmit as hundleProfileFormSubmit } from "./components/forms/profile-edit";
-import { handleCreateForm } from "./components/forms/create-card";
+import { handleProfileFormSubmit } from "./components/forms/profile-edit";
+import { handleCreateCardForm } from "./components/forms/create-card";
 
+
+// -----------------------------------------------------------------------------------------------------
 // DOM узлы
-const placesList = document.querySelector(".places__list"); // Контейнер для карточек
+// -----------------------------------------------------------------------------------------------------
+
+const placesList = document.querySelector(".places__list"); // контейнер для карточек
+
+const popupCard = document.querySelector('.popup_type_new-card'); // модальное окно для создания карточки
+const popupEdit = document.querySelector('.popup_type_edit'); // модальное окно для редактирования профиля
+const popupImage = document.querySelector('.popup_type_image'); // модальное окно для изображения
+
 const editProfileButton = document.getElementById('editProfileButton'); // кнопка для редактирования профиля
 const newCardButton = document.getElementById('newCardButton'); // кнопка для создания карточки
-const newCardForm = document.getElementById('newCardForm'); // форма создания карточки
-const editProfileForm = document.getElementById('editProfileForm'); // форма редактирования профиля
+
+const newCardForm = document.forms["new-place"]; // форма создания карточки
+const editProfileForm = document.forms["edit-profile"]; // форма редактирования профиля
+
+const profileTitle = document.querySelector('.profile__title'); // Заголовок профиля
+const profileDescription = document.querySelector('.profile__description'); // Описание профиля
+
+const imageInPopup = document.getElementById('popupImage'); // Изображение в модальном окне с картинкой
+const captionInPopup = document.getElementById('popupCaption'); // Подпись изображения в модальном окне с картинкой
+
+// -----------------------------------------------------------------------------------------------------
+// Рендер карточек
+// -----------------------------------------------------------------------------------------------------
+
 
 // Выводим карточки на страницу
 initialCards.forEach((cardData) => {
@@ -19,27 +40,78 @@ initialCards.forEach((cardData) => {
   placesList.append(cardElement);
 });
 
+// -----------------------------------------------------------------------------------------------------
+// Добавление обработчиков для модальных окон
+// -----------------------------------------------------------------------------------------------------
 
 // Открытие модального окна по клику на кнопку создания карточки
-newCardButton.addEventListener('click', () => openNewCardPopup(
-  newCardForm
-  ));
+newCardButton.addEventListener('click', () => openPopup(popupCard));
 
 // Открытие модального окна по клику на кнопку редактирования профиля
 editProfileButton.addEventListener('click', () => openEditProfilePopup(editProfileForm));
 
-// Обработка отправки формы создания карточки
-newCardForm.addEventListener('submit', (event) => handleCreateForm(
-  event, newCardForm, createCard, placesList, showImagePopup
-));
-
-// Обработка отправки формы редактирования профиля
-editProfileForm.addEventListener('submit', (e) => {
-  hundleProfileFormSubmit(e, editProfileForm); 
-});
-
 // Добавляем анимацию на все модальные окна
 const popups = document.querySelectorAll('.popup');
 popups.forEach(popup => {
-  popup.classList.add('popup_is-animated')
+  popup.classList.add('popup_is-animated');
+});
+
+// Добавляем условия закрытия попапа
+document.querySelectorAll('.popup').forEach ((popup)=> {
+  popup.addEventListener('mousedown', (event) => addPopupCloseTarget(event, popup));
 })
+
+// -----------------------------------------------------------------------------------------------------
+// Обработка форм
+// -----------------------------------------------------------------------------------------------------
+
+// Обработка отправки формы создания карточки
+newCardForm.addEventListener('submit', (event) => {
+  const formProps = {
+    event, 
+    form: newCardForm, 
+    createCard, 
+    cardList: placesList, 
+    showImagePopup
+  }
+  handleCreateCardForm(formProps);
+  closePopup(popupCard);
+});
+
+// Обработка отправки формы редактирования профиля
+editProfileForm.addEventListener('submit', (event) => {
+  const formProps = {
+    event, 
+    form: editProfileForm, 
+    oldTitle: profileTitle, 
+    oldDescription: profileDescription 
+  }
+  handleProfileFormSubmit(formProps); 
+  closePopup(popupEdit);
+});
+
+// -----------------------------------------------------------------------------------------------------
+// Функции для открытия модальных окон
+// -----------------------------------------------------------------------------------------------------
+
+// Функция для открытия модального окна изображения
+export function showImagePopup(imageSrc, imageDesc) {
+  
+  imageInPopup.src = imageSrc; // Устанавливаем изображение в модальном окне
+  captionInPopup.textContent = imageDesc; // Устанавливаем подпись
+  // alt добавляется при создании карточки как name
+  
+  // Показываем модальное окно
+  openPopup(popupImage)
+}
+
+// Функция для открытия модального окна редактирования профиля
+export function openEditProfilePopup(editProfileForm) {
+
+  // Заполняем форму текущими данными из HTML
+  editProfileForm.name.value = profileTitle.textContent;
+  editProfileForm.description.value = profileDescription.textContent;
+
+  // Показываем модальное окно
+  openPopup(popupEdit)
+}

@@ -1,112 +1,37 @@
 // работа с модалками
 
-// функция для удаления всех обработчиков
-function removePopupHandlers(popup) {
-    // Создаем временные функции для удаления
-    const closeByIcon = (event) => hidePopup(popup);
-    const closeByOverlay = (event) => {
-        if (event.target === popup) {
-            hidePopup(popup);
-        }
-    }
-    const closeByESC = (event) => {
-        if (event.key === 'Escape') {
-            hidePopup(popup);
-        }
-    }
+export let currentPopup = null; 
 
-    const popupCloseIcon = popup.querySelector(".popup__close");
-    popupCloseIcon.removeEventListener('click', closeByIcon);
-    popup.removeEventListener('click', closeByOverlay);
-    document.removeEventListener('keydown', closeByESC);
+// Функция закрытия модалки по кнопке ESC
+function closeByESC(event) {
+    if (event.key === "Escape") { 
+        closePopup(currentPopup); 
+        currentPopup = null; 
+    }
 }
 
-// функция для добавления обработчиков закрытия модалки
-function addPopupHandlers(popup) {
-    
-    const closeByIcon = (event) => hidePopup(popup);
-    const closeByOverlay = (event) => {
-        if (event.target === popup) {
-            hidePopup(popup);
-        }
-    }
-    const closeByESC = (event) => {
-        if (event.key === 'Escape') {
-            hidePopup(popup);
-        }
-    }
-
-    const popupCloseIcon = popup.querySelector(".popup__close");
-    popupCloseIcon.addEventListener('click', closeByIcon);
-    popup.addEventListener('click', closeByOverlay);
+// Функция для открытия модального окна
+export function openPopup(popup) {
+    popup.classList.add('popup_is-opened'); // Показываем попап
     document.addEventListener('keydown', closeByESC);
+    // Сохраняем текущий открытый попап
+    currentPopup = popup;
 }
 
-// функция закрытия модалки
-export function hidePopup(popup) {
+// Функция для закрытия модального окна
+export function closePopup(popup) {
     popup.classList.remove('popup_is-opened'); // Скрываем попап
-
     // Удаляем обработчик события
-    removePopupHandlers(popup)
+    document.removeEventListener('keydown', closeByESC);
+    currentPopup = null;
 }
 
-
-// Функция для открытия модального окна изображения
-export function showImagePopup(imageSrc, imageAlt, addCloseLogicPopup=addPopupHandlers) {
-    const popup = document.getElementById('imagePopup');
-    const popupImage = document.getElementById('popupImage');
-    const popupCaption = document.getElementById('popupCaption');
-    
-    popupImage.src = imageSrc; // Устанавливаем изображение в модальном окне
-    popupCaption.textContent = imageAlt; // Устанавливаем подпись
-    
-    // Показываем модальное окно
-    popup.classList.toggle('popup_is-opened');
-
-    addCloseLogicPopup(popup)
+// Функция закрытия модального окна по клику на оверлей и крестик
+export function addPopupCloseTarget(event, popup) {
+    if (event.target.classList.contains('popup_is-opened')) {
+        closePopup(popup)
+    }
+    if (event.target.classList.contains('popup__close')) {
+        closePopup(popup)
+      }
 }
-
-// Функция для открытия модального окна редактирования профиля
-export function openEditProfilePopup(editProfileForm, addCloseLogicPopup=addPopupHandlers) {
-    const popup = document.getElementById('editProfilePopup');
-
-    // Получаем элементы профиля
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-
-    // Заполняем форму текущими данными из HTML
-    editProfileForm.name.value = profileTitle.textContent;
-    editProfileForm.description.value = profileDescription.textContent;
-
-    // Показываем модальное окно
-    popup.classList.toggle('popup_is-opened');
-
-    addCloseLogicPopup(popup);
-
-    editProfileForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        hidePopup(popup)
-    })
-
-}
-
-// Функция для открытия модального окна создания карточки
-export function openNewCardPopup(form, addCloseLogicPopup=addPopupHandlers) {
-    const popup = document.getElementById('newCardPopup');
-
-    // Очищаем форму перед открытием
-    form.reset();
-
-    // Показываем модальное окно
-    popup.classList.toggle('popup_is-opened');
-
-    addCloseLogicPopup(popup);    
-
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        hidePopup(popup)
-    })
-
-}
-
-

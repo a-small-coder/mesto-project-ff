@@ -1,4 +1,9 @@
-export function handleCreateForm(event, form, createCard, cardList, showImagePopup) {
+
+
+export function handleCreateCardForm(props) {
+    
+    const {event, form, createCard, cardList, showImagePopup} = props
+
     event.preventDefault(); // Предотвращаем перезагрузку страницы
     // Получаем данные из формы
     const cardData = {
@@ -11,4 +16,7 @@ export function handleCreateForm(event, form, createCard, cardList, showImagePop
     
     // Добавляем новую карточку на страницу 
     cardList.prepend(newCard);
+
+    // Очищаем форму перед открытием
+    form.reset();
 }

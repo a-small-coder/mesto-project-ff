@@ -5,7 +5,7 @@ const template = document.getElementById("card-template").content;
 
 // создание карточки
 // Функция создания карточки
-export function createCard(data, showImagePopup, removeCard=deleteCard, toggleLike=handleLikeButtonClick) {
+export function createCard(data, showImagePopup) {
   const newCard = template.querySelector(".card").cloneNode(true);
   // Добавляем данные в новую карточку
   const image = newCard.querySelector(".card__image");
@@ -20,11 +20,11 @@ export function createCard(data, showImagePopup, removeCard=deleteCard, toggleLi
 
   // Настройка кнопки удаления
   const deleteButton = newCard.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", () => removeCard(newCard));
+  deleteButton.addEventListener("click", () => deleteCard(newCard));
 
   // Настройка кнопки лайка
   const likeButton = newCard.querySelector(".card__like-button");
-  likeButton.addEventListener("click", () => toggleLike(likeButton));
+  likeButton.addEventListener("click", () => handleLikeButtonClick(likeButton));
   
   return newCard;
   }
