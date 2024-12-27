@@ -57,7 +57,7 @@ popups.forEach(popup => {
 });
 
 // Добавляем условия закрытия попапа
-document.querySelectorAll('.popup').forEach ((popup)=> {
+popups.forEach ((popup)=> {
   popup.addEventListener('mousedown', (event) => addPopupCloseTarget(event, popup));
 })
 
@@ -98,8 +98,8 @@ editProfileForm.addEventListener('submit', (event) => {
 export function showImagePopup(imageSrc, imageDesc) {
   
   imageInPopup.src = imageSrc; // Устанавливаем изображение в модальном окне
+  imageInPopup.alt = imageDesc; // Устанавливаем alt для изображения в модальном окне
   captionInPopup.textContent = imageDesc; // Устанавливаем подпись
-  // alt добавляется при создании карточки как name
   
   // Показываем модальное окно
   openPopup(popupImage)

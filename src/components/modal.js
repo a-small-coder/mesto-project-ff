@@ -5,8 +5,7 @@ export let currentPopup = null;
 // Функция закрытия модалки по кнопке ESC
 function closeByESC(event) {
     if (event.key === "Escape") { 
-        closePopup(currentPopup); 
-        currentPopup = null; 
+        closePopup(currentPopup);
     }
 }
 
