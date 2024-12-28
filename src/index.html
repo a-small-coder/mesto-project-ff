@@ -15,13 +15,20 @@
       <header class="header page__section">
         <img
           src="<%=require('./images/logo.svg')%>"
-          alt="Логотип проекта масто"
+          alt="Логотип проекта место"
           class="logo header__logo"
         />
       </header>
       <main class="content">
         <section class="profile page__section">
-          <div class="profile__image"></div>
+          <div class="profile__image-container">
+            <div class="profile__image-overlay"></div>
+            <img
+              src="<%=require('./images/avatar.jpg')%>"
+              alt="= фото профиля"
+              class="profile__image"
+            />
+          </div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
             <button class="profile__edit-button" id="editProfileButton" type="button"></button>
@@ -99,13 +106,41 @@
      </div>
     </div>
 
+    <div class="popup popup_type_avatar" id="profileImagePopup">
+      <div class="popup__content popup__avatar">
+        <button
+          type="button"
+          class="popup__close"
+          aria-label="Закрыть"
+        ></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+        <form class="popup__form" name="change-avatar" novalidate>
+          <input
+            type="url"
+            name="link"
+            class="popup__input popup__input_type_url"
+            id="avatar-url"
+            placeholder="Введите ссылку на аватар"
+            required
+          />
+          <span class="form__input-error avatar-url-error" id="profileImageError"></span>
+          <button type="submit" class="button popup__button">
+            Сохранить
+          </button>
+        </form>
+      </div>
+    </div>
+
     <template id="card-template">
       <li class="places__item card">
         <img class="card__image open-popup" src="" alt=""/>
         <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
-          <button type="button" class="card__like-button"></button>
+          <div class="card__like-container">
+            <button type="button" class="card__like-button" aria-label="Like"></button>
+            <span class="card__like-count">0</span>
+          </div>
         </div>
       </li>
     </template>

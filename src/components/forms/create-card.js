@@ -16,10 +16,8 @@ const linkProps = {
     errorElement: errorImageLink
 }
 
-export function handleCreateCardForm(props) {
+export function handleCreateCardForm(event, createRequest) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
-
-    const {event, createCard, cardList, showImagePopup} = props
 
     // Получаем данные из формы
     const cardData = {
@@ -27,15 +25,11 @@ export function handleCreateCardForm(props) {
         link: newCardForm['link'].value
     };
 
-    // Создаем карточку с помощью функции createCard
-    const newCard = createCard(cardData, showImagePopup);
-    
-    // Добавляем новую карточку на страницу 
-    cardList.prepend(newCard);
+    createRequest(cardData);
 
     // Очищаем форму перед закрытием
     newCardForm.reset();
-    clearValidationErrors();
+    clearValidationErrors('add');
 }
 
 const validatePlaceNameInput = (props) => {
@@ -54,6 +48,8 @@ const validatePlaceNameInput = (props) => {
         toggleInputError(input, 'add');
         return false;
     }
+    errorElement.textContent = '';
+    toggleInputError(input, 'remove');
     
     return true;
 };
@@ -72,6 +68,19 @@ function toggleInputError(input, variant='add'){
     }
 }
 
+function validateLinkInput(props) {
+    const {input, errorElement} = props;
+    const isLinkValid = input.checkValidity(); // Проверка на валидный URL
+    if (!isLinkValid){
+        errorElement.textContent = 'Введите корректный URL.';
+        toggleInputError(input, 'add');
+        return false;
+    }
+    errorElement.textContent = '';
+    toggleInputError(input, 'remove');
+    return true
+}
+
 function toggleSaveButtonDisable(variant='add'){
     if (variant === 'add'){
         cardSaveButton.disabled = true; // Деактивируем кнопку
@@ -88,21 +97,12 @@ function toggleSaveButtonDisable(variant='add'){
     }
 }
 
-const validateLinkInput = (props) => {
-    const {input, errorElement} = props;
-    const isLinkValid = input.checkValidity(); // Проверка на валидный URL
-    if (!isLinkValid){
-        errorElement.textContent = 'Введите корректный URL.';
-        toggleInputError(input, 'add')
-    }
-}
-
-export const clearValidationErrors = () => {
+export const clearValidationErrors = (disableButton='remove') => {
     errorCardName.textContent = '';
     errorImageLink.textContent = '';
     toggleInputError(newCardForm['place-name'], 'remove');
     toggleInputError(newCardForm['link'], 'remove');
-    toggleSaveButtonDisable('remove')
+    toggleSaveButtonDisable(disableButton);
 };
 
 export function validateCreateCardForm(){
@@ -111,15 +111,10 @@ export function validateCreateCardForm(){
     const isLinkValid = validateLinkInput(linkProps);
     
     if (isPlaceNameValid && isLinkValid){
-        // cardSaveButton.disabled = false; // Активируем кнопку, если оба поля валидны
-        // if (cardSaveButton.classList.contains('button-disabled')){
-        //     cardSaveButton.classList.remove('button-disabled')
-        // }
-        // toggleSaveButtonDisable('remove')
-        clearValidationErrors();
+        toggleSaveButtonDisable('remove');
     } else {
         
-        toggleSaveButtonDisable('add')
+        toggleSaveButtonDisable('add');
         
     }
 }

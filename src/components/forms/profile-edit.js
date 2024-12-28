@@ -20,14 +20,18 @@ const descProps = {
     maxLength: 200
 }
 
-export function handleProfileFormSubmit(event) {
+export function handleProfileFormSubmit(event, changeRequest) {
     event.preventDefault(); // Предотвращаем перезагрузку страницы
 
     validateProfileForm(); // Валидируем форму
 
     // Сохраняем данные формы
-    profileTitle.textContent = editProfileForm.name.value;
-    profileDescription.textContent = editProfileForm.description.value;
+    // profileTitle.textContent = editProfileForm.name.value;
+    // profileDescription.textContent = editProfileForm.description.value;
+    changeRequest({
+        name: editProfileForm.name.value,
+        about: editProfileForm.description.value,
+    })
 }
 
 const validateInput = (props) => {
