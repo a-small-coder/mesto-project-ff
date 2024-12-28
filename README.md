@@ -4,6 +4,6 @@
 
 Ссылка на сайт - [Mesto](https://a-small-coder.github.io/mesto-project-ff/)
 
-# Стек
+## Стек
 
 html5 + css3 + js 

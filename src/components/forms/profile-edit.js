@@ -1,3 +1,5 @@
+import { validateInput } from "../validation";
+
 export const editProfileForm = document.forms["edit-profile"]; // форма редактирования профиля
 
 export const profileTitle = document.querySelector('.profile__title'); // Заголовок профиля
@@ -34,24 +36,6 @@ export function handleProfileFormSubmit(event, changeRequest) {
     })
 }
 
-const validateInput = (props) => {
-    const { input, errorElement, minLength, maxLength } = props
-    const valueTrimed = input.value.trim();
-    const regex = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/; // Регулярное выражение для проверки
-    console.log(valueTrimed)
-    if (valueTrimed.length < minLength || valueTrimed.length > maxLength) {
-        errorElement.textContent = `Должно быть от ${minLength} до ${maxLength} символов.`;
-        return false;
-    }
-    
-    if (!regex.test(valueTrimed)) {
-        errorElement.textContent = 'Допустимы только латинские и кириллические буквы, пробелы и дефисы.';
-        return false;
-    }
-    
-    return true;
-};
-
 export const clearValidationErrors = () => {
     errorProfileName.textContent = '';
     errorProfileDesc.textContent = '';
@@ -63,16 +47,9 @@ export function validateProfileForm(){
     const isDescriptionValid = validateInput(descProps);
     
     if (isNameValid && isDescriptionValid){
-        profileSaveButton.disabled = false; // Активируем кнопку, если оба поля валидны
-        if (profileSaveButton.classList.contains('button-disabled')){
-            profileSaveButton.classList.remove('button-disabled')
-        }
+        toggleSaveButtonDisable(profileSaveButton, 'remove');// Активируем кнопку, если оба поля валидны
         clearValidationErrors();
-    } else {
-        profileSaveButton.disabled = true; // Деактивируем кнопку, если есть ошибки валидации
-        if (!profileSaveButton.classList.contains('button-disabled')){
-            profileSaveButton.classList.add('button-disabled')
-        }
-        
+    } else {// Деактивируем кнопку, если есть ошибки валидации
+        toggleSaveButtonDisable(profileSaveButton, 'add');
     }
 }
