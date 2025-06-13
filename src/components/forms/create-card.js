@@ -1,4 +1,4 @@
-import { toggleInputError, validateInput, validateLinkInput } from "../validation";
+import { toggleInputError, toggleSaveButtonDisable, validateInput, validateLinkInput } from "../validation";
 
 export const newCardForm = document.forms["new-place"]; // форма создания карточки
 
@@ -39,7 +39,7 @@ export const clearValidationErrors = (disableButton='remove') => {
     errorImageLink.textContent = '';
     toggleInputError(newCardForm['place-name'], 'remove');
     toggleInputError(newCardForm['link'], 'remove');
-    toggleSaveButtonDisable(disableButton);
+    toggleSaveButtonDisable(cardSaveButton, disableButton);
 };
 
 export function validateCreateCardForm(){

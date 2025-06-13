@@ -1,13 +1,13 @@
-import { toggleInputError, toggleSaveButtonDisable } from "../validation";
+import { toggleInputError, toggleSaveButtonDisable, validateLinkInput } from "../validation";
 
 export const profileImageForm = document.forms["change-avatar"]; // форма редактирования аватарки
-export const errorProfileName = document.getElementById('profileImageError'); 
+export const errorProfileImage = document.getElementById('profileImageError'); 
 export const profileImageSaveButton = profileImageForm.querySelector('.button');
 export const profileImage = document.querySelector('.profile__image'); // аватарка пользователя
 
 const linkProps = {
     input: profileImageForm['link'], 
-    errorElement: errorProfileName
+    errorElement: errorProfileImage
 }
 
 
@@ -20,7 +20,7 @@ export function handleChangeProfileImageSubmit(event, changeImageRequest) {
 }
 
 export const clearValidationErrors = (disableButton='remove') => {
-    errorProfileName.textContent = '';
+    errorProfileImage.textContent = '';
     toggleInputError(profileImageForm['link'], 'remove');
     toggleSaveButtonDisable(profileImageSaveButton, disableButton);
 };

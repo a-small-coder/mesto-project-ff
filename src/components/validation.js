@@ -13,16 +13,15 @@ export function validateLinkInput(props) {
 
 export const validateInput = (props) => {
     const { input, errorElement, minLength, maxLength } = props
-    const valueTrimed = input.value.trim();
+    const valueTrimmed = input.value.trim();
     const regex = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/; // Регулярное выражение для проверки
-    console.log(valueTrimed)
-    if (valueTrimed.length < minLength || valueTrimed.length > maxLength) {
+    if (valueTrimmed.length < minLength || valueTrimmed.length > maxLength) {
         errorElement.textContent = `Должно быть от ${minLength} до ${maxLength} символов.`;
         toggleInputError(input, 'add');
         return false;
     }
     
-    if (!regex.test(valueTrimed)) {
+    if (!regex.test(valueTrimmed)) {
         errorElement.textContent = 'Допустимы только латинские и кириллические буквы, пробелы и дефисы.';
         toggleInputError(input, 'add');
         return false;

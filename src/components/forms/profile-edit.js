@@ -1,4 +1,4 @@
-import { validateInput } from "../validation";
+import { toggleInputError, toggleSaveButtonDisable, validateInput } from "../validation";
 
 export const editProfileForm = document.forms["edit-profile"]; // форма редактирования профиля
 
@@ -38,7 +38,9 @@ export function handleProfileFormSubmit(event, changeRequest) {
 
 export const clearValidationErrors = () => {
     errorProfileName.textContent = '';
+    toggleInputError(editProfileForm.name, 'remove');
     errorProfileDesc.textContent = '';
+    toggleInputError(editProfileForm.description, 'remove');
 };
 
 export function validateProfileForm(){

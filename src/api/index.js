@@ -1,7 +1,7 @@
 const TOKEN = '65e854c4-700a-467d-be02-5c38257cf03e';
 
 const config = {
-    baseurl:'https://mesto.nomoreparties.co/v1/cohort-mag-4',
+    baseUrl:'https://mesto.nomoreparties.co/v1/cohort-mag-4',
     token:TOKEN,
     headers: {
         'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ const _checkResponse = (res) => {
 }
 
 export const getUserInfo = () => {
-  return fetch(`${config.baseurl}/users/me`, {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'GET',
     headers: config.headers
   })
@@ -26,7 +26,7 @@ export const getUserInfo = () => {
 }
 
 export const getCards = () => {
-    return fetch(`${config.baseurl}/cards`, {
+    return fetch(`${config.baseUrl}/cards`, {
       method: 'GET',
       headers: config.headers
     })
@@ -38,7 +38,7 @@ export const getCards = () => {
 
 // formData = {name, about}
 export function changeProfile (formData){
-    return fetch(`${config.baseurl}/users/me`, {
+    return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify(formData)
@@ -51,7 +51,7 @@ export function changeProfile (formData){
 
 // formData = {name, link}
 export function createCard (formData) {
-    return fetch(`${config.baseurl}/cards`, {
+    return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
         body: JSON.stringify(formData)
@@ -63,7 +63,7 @@ export function createCard (formData) {
 }
 
 export const deleteCard = (cardId) => {
-    return fetch(`${config.baseurl}/cards/${cardId}`, {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
         method: 'DELETE',
         headers: config.headers
     })
@@ -74,7 +74,7 @@ export const deleteCard = (cardId) => {
 }
 
 export const likeCard = (cardId) => {
-    return fetch(`${config.baseurl}/cards/likes/${cardId}`, {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'PUT',
         headers: config.headers
     })
@@ -85,7 +85,7 @@ export const likeCard = (cardId) => {
 }
 
 export const removeLikeCard = (cardId) => {
-    return fetch(`${config.baseurl}/cards/likes/${cardId}`, {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'DELETE',
         headers: config.headers
     })
@@ -96,7 +96,7 @@ export const removeLikeCard = (cardId) => {
 }
 
 export const changeAvatar = (avatarLink) => {
-    return fetch(`${config.baseurl}/users/me/avatar`, {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
       method: 'PATCH',
       headers: config.headers,
       body: JSON.stringify({
@@ -104,21 +104,19 @@ export const changeAvatar = (avatarLink) => {
       }),
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
   }
   
 export const validateImageUrl = (url) => {
-    const urlPattern = /\.(jpeg|jpg|gif|png)$/i;
-    if (!urlPattern.test(url)) {
-        console.error('Неверный формат URL изображения');
+    return fetch(url, { method: 'HEAD' })
+    .then((response) => {
+        if (response.ok) {
+            const contentType = response.headers.get('content-type');
+            return contentType && contentType.startsWith('image/');
+        }
         return false;
-    }
-    return fetch(url, { method: 'HEAD', mode: 'no-cors' })
-    .then(_checkResponse)
-    .then((response) => response.ok)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
+    })
+    .catch((error) => {
+        console.error('Ошибка проверки изображения:', error);
+        return false;
+    });
 }
