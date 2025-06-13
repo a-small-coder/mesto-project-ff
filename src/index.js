@@ -6,15 +6,11 @@ import {
   editProfileForm,
   profileTitle,
   profileDescription,
-  validateProfileForm,
   handleProfileFormSubmit,
   profileSaveButton,
-  clearValidationErrors as clearProfileFormErrors,
 } from "./components/forms/profile-edit";
 import { 
   newCardForm,
-  validateCreateCardForm,
-  clearValidationErrors as clearCardFormErrors,
   cardSaveButton,
   handleCreateCardForm 
 } from "./components/forms/create-card";
@@ -22,11 +18,8 @@ import {
 import {
   profileImageForm,
   handleChangeProfileImageSubmit,
-  validateProfileImageForm,
-  clearValidationErrors as clearProfileImageFormErrors,
   profileImageSaveButton,
   profileImage,
-  errorProfileImage,
 } from './components/forms/profile-image-edit';
 
 import {
@@ -35,10 +28,19 @@ import {
   changeAvatar,
   createCard as createCardRequest,
   changeProfile,
-  validateImageUrl,
 } from './api/index.js';
-import { toggleInputError } from "./components/validation";
+import { validateImageUrl } from './utils/imageValidation.js';
+import { enableValidation, clearValidation } from "./components/validation";
 
+// Настройки валидации
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'button-disabled',
+  inputErrorClass: 'input-error',
+  errorClass: 'form__input-error'
+};
 
 // -----------------------------------------------------------------------------------------------------
 // DOM узлы
@@ -59,8 +61,10 @@ const captionInPopup = document.getElementById('popupCaption'); // Подпис�
 const profileImagePopup = document.querySelector('.popup_type_avatar');
 const profileImageChangeButton = document.querySelector('.profile__image-container');
 
-
 let userId;
+
+// Инициализация валидации всех форм
+enableValidation(validationConfig);
 
 // -----------------------------------------------------------------------------------------------------
 // Рендер карточек и данных пользователя
@@ -92,18 +96,18 @@ Promise.all([getUserInfo(), getCards()])
 
 // Открытие модального окна по клику на кнопку создания карточки
 newCardButton.addEventListener('click', () => {
-  clearCardFormErrors('add');
+  clearValidation(newCardForm, validationConfig);
   openPopup(popupCard)
 });
 
 // Открытие модального окна по клику на кнопку редактирования профиля
 editProfileButton.addEventListener('click', () => {
-  clearProfileFormErrors();
+  clearValidation(editProfileForm, validationConfig);
   openEditProfilePopup(editProfileForm);
 });
 
 profileImageChangeButton.addEventListener('click', () => {
-  clearProfileImageFormErrors('add');
+  clearValidation(profileImageForm, validationConfig);
   openPopup(profileImagePopup);
 });
 
@@ -121,9 +125,6 @@ popups.forEach ((popup)=> {
 // -----------------------------------------------------------------------------------------------------
 // Обработка форм
 // -----------------------------------------------------------------------------------------------------
-
-// Валидация формы создания карточки при изменении данных в инпуте
-newCardForm.addEventListener('input', validateCreateCardForm);
 
 // Обработка отправки формы создания карточки
 newCardForm.addEventListener('submit', (event) => {
@@ -144,9 +145,6 @@ newCardForm.addEventListener('submit', (event) => {
   handleCreateCardForm(event, createRequest);
 });
 
-// Валидация формы профиля при изменении данных в инпуте
-editProfileForm.addEventListener('input', validateProfileForm);
-
 // Обработка отправки формы редактирования профиля
 editProfileForm.addEventListener('submit', (event) => {
   function changeRequest (formData) {
@@ -164,15 +162,16 @@ editProfileForm.addEventListener('submit', (event) => {
   handleProfileFormSubmit(event, changeRequest);
 });
 
-profileImageForm.addEventListener('input', validateProfileImageForm);
-
 profileImageForm.addEventListener('submit', (event) =>{
   async function createImageRequest(imageLink) {
     try {
       const isValid = await validateImageUrl(imageLink);
       if (!isValid) {
-        toggleInputError(profileImageForm.link, 'add');
-        errorProfileImage.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.'
+        // Показываем ошибку валидации
+        const linkInput = profileImageForm.querySelector('input[name="link"]');
+        const errorElement = profileImageForm.querySelector('.form__input-error');
+        linkInput.classList.add('input-error');
+        errorElement.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.';
         return; // Просто выходим из функции, не создаем ошибку
       }
       
@@ -183,8 +182,11 @@ profileImageForm.addEventListener('submit', (event) =>{
       profileImageSaveButton.textContent = 'Сохранить'
     } catch (error) {
       console.error('Ошибка при изменении аватара:', error);
-      toggleInputError(profileImageForm.link, 'add');
-      errorProfileImage.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.'
+      // Показываем ошибку валидации
+      const linkInput = profileImageForm.querySelector('input[name="link"]');
+      const errorElement = profileImageForm.querySelector('.form__input-error');
+      linkInput.classList.add('input-error');
+      errorElement.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.';
       profileImageSaveButton.textContent = 'Сохранить'
     }
   }

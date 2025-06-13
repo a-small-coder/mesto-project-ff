@@ -11,7 +11,6 @@ const config = {
 
 const _checkResponse = (res) => {
   if (res.ok) {
-    // console.log(res)
     return res.json();
   }
   return Promise.reject(`Ошибка: ${res.status}`);
@@ -105,18 +104,3 @@ export const changeAvatar = (avatarLink) => {
     })
     .then(_checkResponse)
   }
-  
-export const validateImageUrl = (url) => {
-    return fetch(url, { method: 'HEAD' })
-    .then((response) => {
-        if (response.ok) {
-            const contentType = response.headers.get('content-type');
-            return contentType && contentType.startsWith('image/');
-        }
-        return false;
-    })
-    .catch((error) => {
-        console.error('Ошибка проверки изображения:', error);
-        return false;
-    });
-}
