@@ -4,8 +4,6 @@ import { likeCard, removeLikeCard, deleteCard as removeCard } from "../api";
 // Темплейт карточки
 const template = document.getElementById("card-template").content;
 
-let memorizedDeleteButton;
-
 // создание карточки
 // Функция создания карточки
 export function createCard(data, showImagePopup, userId) {
@@ -24,16 +22,11 @@ export function createCard(data, showImagePopup, userId) {
   // Настройка кнопки удаления
   const deleteButton = newCard.querySelector(".card__delete-button");
 
-  console.log(data.owner._id, userId)
   if (data.owner._id !== userId) {
     deleteButton.style.display = 'none';
   } else {
-    deleteButton.addEventListener('click', () => {
-      memorizedDeleteButton = deleteButton;
-    });
+    deleteButton.addEventListener("click", () => deleteCard(data._id, newCard));
   }
-
-  deleteButton.addEventListener("click", () => deleteCard(data._id));
 
   // Настройка кнопки лайка
   const likeCount = newCard.querySelector('.card__like-count');
@@ -51,37 +44,27 @@ export function createCard(data, showImagePopup, userId) {
 
 // удаление карточки
 // Функция для удаления карточки
-export function deleteCard(cardId) {
+export function deleteCard(cardId, cardElement) {
   removeCard(cardId)
   .then(() => {
-    memorizedDeleteButton.closest('.places__item').remove();
+    cardElement.remove();
   })
-
+  .catch(console.error);
 }
 
 // лайк для карточки
 // Функция для обработки клика на иконку лайка
 export function handleLikeButtonClick(likeButton, cardId, likeCount) {
-    // Меняем css класс для иконки
     const isLiked = likeButton.classList.contains('card__like-button_is-active');
     if (cardId) {
-      if (isLiked){
-        removeLikeCard(cardId).then((cardData) => {
-          if (cardData) {
-            likeButton.classList.toggle('card__like-button_is-active');
-            likeCount.textContent = cardData.likes.length;
-          }
-        })
-        .catch(console.error);
-      }
-      else{
-        likeCard(cardId).then((cardData) => {
-          if (cardData) {
-            likeButton.classList.toggle('card__like-button_is-active');
-            likeCount.textContent = cardData.likes.length;
-          }
-        })
-        .catch(console.error);
-      }
+      const apiCall = isLiked ? removeLikeCard(cardId) : likeCard(cardId);
+      
+      apiCall.then((cardData) => {
+        if (cardData) {
+          likeButton.classList.toggle('card__like-button_is-active');
+          likeCount.textContent = cardData.likes.length;
+        }
+      })
+      .catch(console.error);
     }
   }

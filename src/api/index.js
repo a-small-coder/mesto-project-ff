@@ -30,9 +30,6 @@ export const getCards = () => {
       headers: config.headers
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
   }
 
 // formData = {name, about}
@@ -43,22 +40,16 @@ export function changeProfile (formData){
         body: JSON.stringify(formData)
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
 }
 
 // formData = {name, link}
-export function createCard (formData) {
+export function addCard (formData) {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
         body: JSON.stringify(formData)
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
 }
 
 export const deleteCard = (cardId) => {
@@ -67,9 +58,6 @@ export const deleteCard = (cardId) => {
         headers: config.headers
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
 }
 
 export const likeCard = (cardId) => {
@@ -78,9 +66,6 @@ export const likeCard = (cardId) => {
         headers: config.headers
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
 }
 
 export const removeLikeCard = (cardId) => {
@@ -89,9 +74,6 @@ export const removeLikeCard = (cardId) => {
         headers: config.headers
     })
     .then(_checkResponse)
-    .catch((err) => {
-        console.log(err); // выводим ошибку в консоль
-      }); 
 }
 
 export const changeAvatar = (avatarLink) => {

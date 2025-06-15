@@ -2,31 +2,12 @@ import "./styles/pages/index.css";
 
 import { openPopup, closePopup, addPopupCloseTarget} from "./components/modal";
 import { createCard } from "./components/card";
-import { 
-  editProfileForm,
-  profileTitle,
-  profileDescription,
-  handleProfileFormSubmit,
-  profileSaveButton,
-} from "./components/forms/profile-edit";
-import { 
-  newCardForm,
-  cardSaveButton,
-  handleCreateCardForm 
-} from "./components/forms/create-card";
-
-import {
-  profileImageForm,
-  handleChangeProfileImageSubmit,
-  profileImageSaveButton,
-  profileImage,
-} from './components/forms/profile-image-edit';
 
 import {
   getCards,
   getUserInfo,
   changeAvatar,
-  createCard as createCardRequest,
+  addCard,
   changeProfile,
 } from './api/index.js';
 import { validateImageUrl } from './utils/imageValidation.js';
@@ -48,18 +29,28 @@ const validationConfig = {
 
 const placesList = document.querySelector(".places__list"); // контейнер для карточек
 
+const newCardButton = document.getElementById('newCardButton'); // кнопка на странице для создания карточки
 const popupCard = document.querySelector('.popup_type_new-card'); // модальное окно для создания карточки
-const popupEdit = document.querySelector('.popup_type_edit'); // модальное окно для редактирования профиля
-const popupImage = document.querySelector('.popup_type_image'); // модальное окно для изображения
+const newCardForm = popupCard.querySelector('.popup__form'); // форма создания карточки
+const cardSaveButton = newCardForm.querySelector('.button'); // кнопка сохранения формы для создания карточки
 
+const profileTitle = document.querySelector('.profile__title'); // Заголовок профиля
+const profileDescription = document.querySelector('.profile__description'); // Описание профиля
 const editProfileButton = document.getElementById('editProfileButton'); // кнопка для редактирования профиля
-const newCardButton = document.getElementById('newCardButton'); // кнопка для создания карточки
+const popupEdit = document.querySelector('.popup_type_edit'); // модальное окно для редактирования профиля
+const editProfileForm = popupEdit.querySelector('.popup__form'); // форма редактирования профиля
+const profileSaveButton = editProfileForm.querySelector('.button'); // кнопка сохранения формы для редактирования профиля
 
+const popupImage = document.querySelector('.popup_type_image'); // модальное окно для изображения
 const imageInPopup = document.getElementById('popupImage'); // Изображение в модальном окне с картинкой
 const captionInPopup = document.getElementById('popupCaption'); // Подпись изображения в модальном окне с картинкой
 
-const profileImagePopup = document.querySelector('.popup_type_avatar');
-const profileImageChangeButton = document.querySelector('.profile__image-container');
+const profileImage = document.querySelector('.profile__image'); // аватарка пользователя
+const profileImageChangeButton = document.querySelector('.profile__image-container'); // кнопка на страницедля редактирования аватарки
+const profileImagePopup = document.querySelector('.popup_type_avatar'); // модальное окно для редактирования аватарки
+const profileImageForm = profileImagePopup.querySelector('.popup__form'); // форма редактирования аватарки
+const profileImageSaveButton = profileImageForm.querySelector('.button'); // кнопка сохранения формы для редактирования аватарки
+
 
 let userId;
 
@@ -106,6 +97,7 @@ editProfileButton.addEventListener('click', () => {
   openEditProfilePopup(editProfileForm);
 });
 
+// Открытие модального окна по клику на кнопку редактирования аватарки
 profileImageChangeButton.addEventListener('click', () => {
   clearValidation(profileImageForm, validationConfig);
   openPopup(profileImagePopup);
@@ -126,72 +118,97 @@ popups.forEach ((popup)=> {
 // Обработка форм
 // -----------------------------------------------------------------------------------------------------
 
+// Функция для показа ошибки валидации изображения
+function showImageError(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  input.classList.add('input-error');
+  errorElement.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.';
+}
+
 // Обработка отправки формы создания карточки
-newCardForm.addEventListener('submit', (event) => {
-  function createRequest (formData) {
-    cardSaveButton.textContent = 'Сохранение...'
-    return createCardRequest(formData).then((res) => {
-      // Создаем карточку с помощью функции createCard
-      const newCard = createCard(res, showImagePopup, userId);
-      // Добавляем новую карточку на страницу 
-      placesList.prepend(newCard);
-      closePopup(popupCard);
-      cardSaveButton.textContent = 'Сохранить'
-    }).catch((error) => {
-      console.error('Ошибка при создании карточки:', error);
-      cardSaveButton.textContent = 'Сохранить'
-    });
+newCardForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  
+  cardSaveButton.textContent = 'Сохранение...';
+  
+  const cardData = {
+    name: newCardForm['place-name'].value,
+    link: newCardForm.link.value
   }
-  handleCreateCardForm(event, createRequest);
+
+  try {
+    // проверка что изображние можно загрузить
+    const isValid = await validateImageUrl(cardData.link);
+    if (!isValid) {
+      showImageError(newCardForm.link);
+      return;
+    }
+
+    const res = await addCard(cardData);
+    // Создаем карточку с помощью функции createCard
+    const newCard = createCard(res, showImagePopup, userId);
+    // Добавляем новую карточку на страницу 
+    placesList.prepend(newCard);
+    closePopup(popupCard);
+    newCardForm.reset();
+  } catch (error) {
+    console.error('Ошибка при создании карточки:', error);
+    showImageError(newCardForm.link);
+  } finally {
+    cardSaveButton.textContent = 'Сохранить';
+  }
 });
 
 // Обработка отправки формы редактирования профиля
 editProfileForm.addEventListener('submit', (event) => {
-  function changeRequest (formData) {
-    profileSaveButton.textContent = 'Сохранение...'
-    return changeProfile(formData).then((res) => {
-      profileTitle.textContent = res.name;
-      profileDescription.textContent = res.about;
-      profileSaveButton.textContent = 'Сохранить'
-      closePopup(popupEdit);
-    }).catch((error) => {
-      console.error('Ошибка при изменении профиля:', error);
-      profileSaveButton.textContent = 'Сохранить'
-    });
+  event.preventDefault();
+  
+  profileSaveButton.textContent = 'Сохранение...';
+  
+  const profileData = {
+    name: editProfileForm.name.value,
+    about: editProfileForm.description.value
   }
-  handleProfileFormSubmit(event, changeRequest);
+  
+  changeProfile(profileData)
+  .then((res) => {
+    profileTitle.textContent = res.name;
+    profileDescription.textContent = res.about;
+    closePopup(popupEdit);
+  })
+  .catch((error) => {
+    console.error('Ошибка при изменении профиля:', error);
+  })
+  .finally(() => {
+    profileSaveButton.textContent = 'Сохранить';
+  });
 });
 
-profileImageForm.addEventListener('submit', (event) =>{
-  async function createImageRequest(imageLink) {
-    try {
-      const isValid = await validateImageUrl(imageLink);
-      if (!isValid) {
-        // Показываем ошибку валидации
-        const linkInput = profileImageForm.querySelector('input[name="link"]');
-        const errorElement = profileImageForm.querySelector('.form__input-error');
-        linkInput.classList.add('input-error');
-        errorElement.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.';
-        return; // Просто выходим из функции, не создаем ошибку
-      }
-      
-      profileImageSaveButton.textContent = 'Сохранение...'
-      const response = await changeAvatar(imageLink);
-      profileImage.src = response.avatar;
-      closePopup(profileImagePopup);
-      profileImageSaveButton.textContent = 'Сохранить'
-    } catch (error) {
-      console.error('Ошибка при изменении аватара:', error);
-      // Показываем ошибку валидации
-      const linkInput = profileImageForm.querySelector('input[name="link"]');
-      const errorElement = profileImageForm.querySelector('.form__input-error');
-      linkInput.classList.add('input-error');
-      errorElement.textContent = 'Не удалось загрузить изображение. Проверьте URL и попробуйте снова.';
-      profileImageSaveButton.textContent = 'Сохранить'
+profileImageForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  
+  const imageLink = profileImageForm['avatar-url'].value;
+  
+  try {
+    profileImageSaveButton.textContent = 'Сохранение...';
+    
+    // проверка что изображние можно загрузить
+    const isValid = await validateImageUrl(imageLink);
+    if (!isValid) {
+      showImageError(profileImageForm['avatar-url']);
+      return;
     }
-  }
 
-  handleChangeProfileImageSubmit(event, createImageRequest);
+    const response = await changeAvatar(imageLink);
+    profileImage.src = response.avatar;
+    closePopup(profileImagePopup);
+    profileImageForm.reset();
+  } catch (error) {
+    console.error('Ошибка при изменении аватара:', error);
+    showImageError(profileImageForm['avatar-url']);
+  } finally {
+    profileImageSaveButton.textContent = 'Сохранить';
+  }
 });
 
 // -----------------------------------------------------------------------------------------------------

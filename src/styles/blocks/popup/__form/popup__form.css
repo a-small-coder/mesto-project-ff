@@ -10,6 +10,9 @@
   height: 28px;
   width: 100%;
   display: block;
+  box-sizing: border-box;
+  line-height: 1.2;
+  padding: 0;
 }
 
 .form__input-error:last-of-type {

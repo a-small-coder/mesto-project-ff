@@ -51,19 +51,29 @@
                 <input
                     type="text"
                     name="name"
+                    id="name"
                     class="popup__input popup__input_type_name"
                     placeholder="Имя"
                     required
+                    minlength="2"
+                    maxlength="40"
+                    pattern="^[A-Za-zА-Яа-яёЁ\- ]+$"
+                    data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 />
-                <span class="form__input-error name-input-error" id="profileNameError"></span>
+                <span class="form__input-error name-input-error" id="name-error"></span>
                 <input
                     type="text"
                     name="description"
+                    id="description"
                     class="popup__input popup__input_type_description"
                     placeholder="Занятие"
                     required
+                    minlength="2"
+                    maxlength="200"
+                    pattern="^[A-Za-zА-Яа-яёЁ\- ]+$"
+                    data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 />
-                <span class="form__input-error desc-input-error" id="profileDescriptionError"></span>
+                <span class="form__input-error desc-input-error" id="description-error"></span>
                 <button type="submit" class="button popup__button">
                     Сохранить
                 </button>
@@ -78,19 +88,26 @@
                 <input
                     type="text"
                     name="place-name"
+                    id="place-name"
                     class="popup__input popup__input_type_card-name"
                     placeholder="Название"
                     required
+                    minlength="2"
+                    maxlength="40"
+                    pattern="^[A-Za-zА-Яа-яёЁ\- ]+$"
+                    data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 />
-                <span class="form__input-error place-name-input-error" id="placeNameDescriptionError"></span>
+                <span class="form__input-error place-name-input-error" id="place-name-error"></span>
                 <input
                     type="url"
                     name="link"
+                    id="link"
                     class="popup__input popup__input_type_url"
                     placeholder="Ссылка на картинку"
                     required
+                    title="Введите корректный URL изображения"
                 />
-                <span class="form__input-error link-input-error" id="LinkDescriptionError"></span>
+                <span class="form__input-error link-input-error" id="link-error"></span>
                 <button type="submit" class="button popup__button">
                     Сохранить
                 </button>
@@ -117,13 +134,14 @@
         <form class="popup__form" name="change-avatar">
           <input
             type="url"
-            name="link"
+            name="avatar-url"
             class="popup__input popup__input_type_url"
             id="avatar-url"
             placeholder="Введите ссылку на аватар"
             required
+            title="Введите корректный URL изображения"
           />
-          <span class="form__input-error avatar-url-error" id="profileImageError"></span>
+          <span class="form__input-error avatar-url-error" id="avatar-url-error"></span>
           <button type="submit" class="button popup__button">
             Сохранить
           </button>
